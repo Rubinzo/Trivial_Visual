@@ -27,6 +27,7 @@ contenedor2.innerHTML = `
 const cargar = document.getElementById("cargar");
 const solucionar = document.getElementById("solucionar");
 let elegidas = [];
+let respuesta_correcta = [];
 
 cargar.addEventListener("click",function(){
 fetch("http://localhost:8080/trivia/easy", requestOptions)
@@ -35,7 +36,7 @@ fetch("http://localhost:8080/trivia/easy", requestOptions)
   
     console.log(result)
     const contenedorJson = document.getElementById("contenedorJson");
-    //let respuesta_correcta = [];
+    
     for(let i = 0; i < result.length; i++){
         // Pregunta
         const parrafo = document.createElement("p");
@@ -52,8 +53,11 @@ fetch("http://localhost:8080/trivia/easy", requestOptions)
         //Respuestas select
         const select = document.createElement("select");
         const id = `id${i}` 
-        select.setAttribute("id", id)
-  
+        select.setAttribute("id", id);
+        
+        
+        select.setAttribute("onclick", click());
+
         result[i].respuestas.forEach(respuesta => {
             const option = document.createElement("option");
             option.value = respuesta;
@@ -61,7 +65,7 @@ fetch("http://localhost:8080/trivia/easy", requestOptions)
             option.appendChild(optionText);
             select.appendChild(option);
         });
-          
+        
         
     
         contenedorJson.appendChild(select);
@@ -138,7 +142,11 @@ fetch("http://localhost:8080/trivia/easy", requestOptions)
  
 });
 
-let respuesta_correcta = [];
+function click(){
+  console.log("clickkkk")
+}
+
+// let respuesta_correcta = [];
 solucionar.addEventListener("click", function(){
     console.log(elegidas);
     const correcto = "correcto";
@@ -157,3 +165,29 @@ solucionar.addEventListener("click", function(){
     });
     console.log(solucion);
 });
+
+const back = document.getElementById("back");
+back.addEventListener("click", function(){
+    let json =  {
+      respuestas: elegidas,
+      correct_answer: respuesta_correcta
+    };
+    console.log(json)
+    let body = JSON.stringify(json);
+    console.log(body)
+    
+    const sendOptions = {
+    method: "POST",
+    headers: myHeaders,
+    redirect: "follow",
+    body: JSON.stringify(json)
+    };
+  
+      send(sendOptions)
+});
+
+function send (sendOptions){
+  fetch("http://localhost:8080/trivia/response", sendOptions)
+    // .then((response) => response.json())
+    
+}
